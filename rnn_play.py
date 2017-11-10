@@ -40,14 +40,14 @@ shakespeareB10 = "checkpoints/rnn_train_1495440473-102000000" # ACT V SCENE IV, 
 pythonA0 = "checkpoints/rnn_train_1495458538-300000"  # gibberish
 pythonA1 = "checkpoints/rnn_train_1495458538-1200000"  # some function calls with parameters and ()
 pythonA2 = "checkpoints/rnn_train_1495458538-10200000"  # starts looking Tensorflow Python, nested () and [] not perfect yet
-pythonB10 = "checkpoints/rnn_train_1495458538-201600000"  # can even recite the Apache license
+pythonB10 = "checkpoints/rnn_train_step_6000000-6000000"  # can even recite the Apache license
 
 # use topn=10 for all but the last one which works with topn=2 for Shakespeare and topn=3 for Python
-author = shakespeareB10
+author = pythonB10
 
 ncnt = 0
 with tf.Session() as sess:
-    new_saver = tf.train.import_meta_graph('checkpoints/rnn_train_1495455686-0.meta')
+    new_saver = tf.train.import_meta_graph('checkpoints/rnn_train_step_6000000-6000000.meta')
     new_saver.restore(sess, author)
     x = my_txtutils.convert_from_alphabet(ord("L"))
     x = np.array([[x]])  # shape [BATCHSIZE, SEQLEN] with BATCHSIZE=1 and SEQLEN=1
@@ -55,7 +55,11 @@ with tf.Session() as sess:
     # initial values
     y = x
     h = np.zeros([1, INTERNALSIZE * NLAYERS], dtype=np.float32)  # [ BATCHSIZE, INTERNALSIZE * NLAYERS]
-    for i in range(1000000000):
+    text_file = open("C:\\Users\\miamm\\Desktop\\output.txt","w")
+
+
+
+    for i in range(100000):
         yo, h = sess.run(['Yo:0', 'H:0'], feed_dict={'X:0': y, 'pkeep:0': 1., 'Hin:0': h, 'batchsize:0': 1})
 
         # If sampling is be done from the topn most likely characters, the generated text
@@ -68,6 +72,7 @@ with tf.Session() as sess:
         y = np.array([[c]])  # shape [BATCHSIZE, SEQLEN] with BATCHSIZE=1 and SEQLEN=1
         c = chr(my_txtutils.convert_to_alphabet(c))
         print(c, end="")
+        text_file.write(c)
 
         if c == '\n':
             ncnt = 0
@@ -77,6 +82,7 @@ with tf.Session() as sess:
             print("")
             ncnt = 0
 
+    text_file.close()
 
 #         TITUS ANDRONICUS
 #

@@ -46,7 +46,7 @@ learning_rate = 0.001  # fixed learning rate
 dropout_pkeep = 0.8    # some dropout
 
 # load data, either shakespeare, or the Python source of Tensorflow itself
-shakedir = "shakespeare/*.txt"
+shakedir = "trainingSet/*.txt"
 #shakedir = "../tensorflow/**/*.py"
 codetext, valitext, bookranges = txt.read_data_files(shakedir, validation=True)
 
@@ -135,8 +135,7 @@ sess.run(init)
 step = 0
 
 # training loop
-for x, y_, epoch in txt.rnn_minibatch_sequencer(codetext, BATCHSIZE, SEQLEN, nb_epochs=10):
-
+for x, y_, epoch in txt.rnn_minibatch_sequencer(codetext, BATCHSIZE, SEQLEN, nb_epochs=50):
     # train on one minibatch
     feed_dict = {X: x, Y_: y_, Hin: istate, lr: learning_rate, pkeep: dropout_pkeep, batchsize: BATCHSIZE}
     _, y, ostate = sess.run([train_step, Y, H], feed_dict=feed_dict)
@@ -178,8 +177,8 @@ for x, y_, epoch in txt.rnn_minibatch_sequencer(codetext, BATCHSIZE, SEQLEN, nb_
         txt.print_text_generation_footer()
 
     # save a checkpoint (every 500 batches)
-    if step // 10 % _50_BATCHES == 0:
-        saved_file = saver.save(sess, 'checkpoints/rnn_train_' + timestamp, global_step=step)
+    if step // 5 % _50_BATCHES == 0:
+        saved_file = saver.save(sess, 'checkpoints/rnn_train_step_'+str( step ) , global_step=step)
         print("Saved file: " + saved_file)
 
     # display progress bar
@@ -211,3 +210,5 @@ for x, y_, epoch in txt.rnn_minibatch_sequencer(codetext, BATCHSIZE, SEQLEN, nb_
 #   Trained on shakespeare/*.txt "naive dropout" pkeep=0.8, 30 epochs
 #   Dropout brings the validation loss under control, preventing it from
 #   going up but the effect is small.
+
+        
